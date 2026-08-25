@@ -1,6 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException
 from app.models import AuthRequest
-from app.auth import signup_user, login_user
+from app.auth import signup_user, login_user, get_current_user
 
 app = FastAPI(
     title="FlyRank Auth API",
@@ -28,4 +28,23 @@ def login(request: AuthRequest):
         "access_token": response.session.access_token,
         "refresh_token": response.session.refresh_token,
         "user": response.user.model_dump(),
+    }
+
+@app.get("/auth/me")
+def me(authorization: str = Header(...)):
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail="Authorization header must use Bearer token",
+        )
+
+    access_token = authorization.removeprefix("Bearer ").strip()
+
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Access token is required")
+
+    user = get_current_user(access_token)
+
+    return {
+        "user": user.model_dump(),
     }
