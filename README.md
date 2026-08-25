@@ -28,7 +28,7 @@ Environment Variables
 Create a .env file based on .env.example:
 
 SUPABASE_URL=your_supabase_project_url
-SUPABASE_KEY=your_supabase_anon_key
+SUPABASE_KEY=your_supabase_publishable_key
 PORT=8000
 
 Do not commit .env or real Supabase credentials.
