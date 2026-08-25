@@ -99,7 +99,8 @@ def test_me_endpoint(monkeypatch):
 def test_me_endpoint_requires_authorization():
     response = client.get("/auth/me")
 
-    assert response.status_code == 422
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Access token required"}
 
 
 def test_me_endpoint_rejects_invalid_scheme():
@@ -109,9 +110,7 @@ def test_me_endpoint_rejects_invalid_scheme():
     )
 
     assert response.status_code == 401
-    assert response.json() == {
-        "detail": "Authorization header must use Bearer token"
-    }
+    assert response.json() == {"detail": "Access token required"}
 
 
 def test_logout_endpoint(monkeypatch):
@@ -127,15 +126,16 @@ def test_logout_endpoint(monkeypatch):
         headers={"Authorization": "Bearer test-token"},
     )
 
-    assert response.status_code == 200
-    assert response.json() == {"message": "Logout successful"}
+    assert response.status_code == 204
+    assert response.content == b""
     assert calls == ["test-token"]
 
 
 def test_logout_endpoint_requires_authorization():
     response = client.post("/auth/logout")
 
-    assert response.status_code == 422
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Access token required"}
 
 
 def test_logout_endpoint_rejects_empty_bearer_token():
@@ -145,4 +145,4 @@ def test_logout_endpoint_rejects_empty_bearer_token():
     )
 
     assert response.status_code == 401
-    assert response.json() == {"detail": "Access token is required"}
+    assert response.json() == {"detail": "Access token required"}
