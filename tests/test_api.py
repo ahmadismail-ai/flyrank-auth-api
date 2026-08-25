@@ -33,7 +33,7 @@ def test_signup_endpoint(monkeypatch):
         },
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == {
         "message": "Signup successful",
         "user": {"id": "user-123", "email": "test@example.com"},

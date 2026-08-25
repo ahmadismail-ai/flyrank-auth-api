@@ -36,7 +36,11 @@ def root():
     return {"message": "FlyRank Auth API is running"}
 
 
-@app.post("/auth/signup")
+@app.get("/public/info")
+def public_info():
+    return {"message": "Welcome stranger! This info is public."}
+
+@app.post("/auth/signup", status_code=201)
 def signup(request: AuthRequest):
     response = signup_user(request.email, request.password)
 
