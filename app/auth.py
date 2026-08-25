@@ -57,3 +57,12 @@ def get_current_user(access_token: str):
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
     return response.user
+
+def logout_user(access_token: str):
+    try:
+        supabase.auth.admin.sign_out(access_token, "global")
+    except Exception as exc:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired token",
+        ) from exc

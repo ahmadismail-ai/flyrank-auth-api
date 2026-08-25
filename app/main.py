@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Header, HTTPException
 from app.models import AuthRequest
-from app.auth import signup_user, login_user, get_current_user
+from app.auth import signup_user, login_user, get_current_user, logout_user
 
 app = FastAPI(
     title="FlyRank Auth API",
@@ -47,4 +47,23 @@ def me(authorization: str = Header(...)):
 
     return {
         "user": user.model_dump(),
+    }
+
+@app.post("/auth/logout")
+def logout(authorization: str = Header(...)):
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail="Authorization header must use Bearer token",
+        )
+
+    access_token = authorization.removeprefix("Bearer ").strip()
+
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Access token is required")
+
+    logout_user(access_token)
+
+    return {
+        "message": "Logout successful",
     }
